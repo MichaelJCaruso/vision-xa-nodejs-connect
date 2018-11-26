@@ -586,6 +586,14 @@
             '-Wno-unused-but-set-variable',
           ]
         }],
+        ['OS=="mac"', {
+          'xcode_settings': {
+            'OTHER_CPLUSPLUSFLAGS': [
+              '-Wno-missing-field-initializers',
+              '-Wno-sometimes-uninitialized',
+            ],
+          },
+        }],
       ],
       'include_dirs': [
         '<(vision_src)/backend',
