@@ -32,7 +32,7 @@
 
 #include "VSymbol.h"
 #include "VSymbolImplementation.h"
-#include "Vxa_ICollection.h"
+#include "Vxa_ICollection2.h"
 
 
 /****************************************
@@ -476,7 +476,9 @@ void VSNFTask::startExternalInvocation (ISingleton *pISingleton) {
     static bool const bICE = getenv ("VxaICE") || !getenv("VxaNoICE");
     suspend ();
 
-    if (Vxa::ICollection *const pICollection = bICE ? dynamic_cast<Vxa::ICollection*>(pISingleton) : 0) {
+    if (Vxa::ICollection2 *const pICollection2 = dynamic_cast<Vxa::ICollection2*>(pISingleton)) {
+	VSNFTaskHolder::Reference const pSNFTaskHolder (new VSNFTaskHolder (this, pICollection2));
+    } else if (Vxa::ICollection *const pICollection = bICE ? dynamic_cast<Vxa::ICollection*>(pISingleton) : 0) {
 	VSNFTaskHolder::Reference const pSNFTaskHolder (new VSNFTaskHolder (this, pICollection));
     } else {
 	VSNFTaskHolder::Reference const pSNFTaskHolder (new VSNFTaskHolder (this, pISingleton));

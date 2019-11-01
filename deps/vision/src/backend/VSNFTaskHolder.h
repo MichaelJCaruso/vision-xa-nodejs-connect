@@ -7,8 +7,7 @@
 
 #include "Vca_VActivity.h"
 
-#include "Vxa_ICaller.h"
-#include "Vxa_IVSNFTaskHolder2.h"
+#include "Vxa_ICaller2.h"
 
 /**************************
  *****  Declarations  *****
@@ -21,6 +20,7 @@
 
 namespace Vxa {
     class ICollection;
+    class ICollection2;
     class ISingleton;
 }
 
@@ -44,7 +44,9 @@ public:
     typedef Vxa::object_reference_array_t object_reference_array_t;
 
     typedef Vxa::ICaller ICaller;
+    typedef Vxa::ICaller2 ICaller2;
     typedef Vxa::ICollection ICollection;
+    typedef Vxa::ICollection2 ICollection2;
     typedef Vxa::ISingleton ISingleton;
 
     typedef Vxa::IVSNFTaskHolder IVSNFTaskHolder;
@@ -179,7 +181,7 @@ public:
 public:
     template <typename T> VSNFTaskHolder (
 	VSNFTask *pSNFTask, T *pT
-    ) : m_pSNFTask (pSNFTask), m_pICaller (this), m_pIVSNFTaskHolder (this), m_pIVSNFTaskHolderNC (this) {
+    ) : m_pSNFTask (pSNFTask), m_pICaller2 (this), m_pICaller (this), m_pIVSNFTaskHolder (this), m_pIVSNFTaskHolderNC (this) {
 	retain (); {
 	    onStart ();
 	    g_iScheduler.schedule (this, pT);
@@ -310,6 +312,14 @@ public:
 
     void ReturnSegmentCount (ICaller *pRole, cardinality_t cSegments);
 
+//  ICaller2 Role
+ private:
+    Vca::VRole<ThisClass,ICaller2> m_pICaller2;
+public:
+    void getRole (ICaller2::Reference &rpRole) {
+	m_pICaller2.getRole (rpRole);
+    }
+
 //  Access/Query
 protected:
     virtual void getDescription_(VString& rResult) const OVERRIDE;
@@ -325,6 +335,7 @@ public:
 private:
     void start (ISingleton *pExternalObject);
     void start (ICollection *pExternalObject);
+    void start (ICollection2 *pExternalObject);
 
     void onDeadPeer (Trigger *pTrigger);
     void onEnd ();

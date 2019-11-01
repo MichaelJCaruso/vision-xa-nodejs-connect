@@ -515,7 +515,9 @@
       'sources': [
         '<(vision_src)/kernel/Vxa.cpp',
         '<(vision_src)/kernel/Vxa_ICaller.cpp',
+        '<(vision_src)/kernel/Vxa_ICaller2.cpp',
         '<(vision_src)/kernel/Vxa_ICollection.cpp',
+        '<(vision_src)/kernel/Vxa_ICollection2.cpp',
         '<(vision_src)/kernel/Vxa_ISingleton.cpp',
         '<(vision_src)/kernel/Vxa_IVSNFTaskHolder.cpp',
         '<(vision_src)/kernel/Vxa_IVSNFTaskHolder1.cpp',

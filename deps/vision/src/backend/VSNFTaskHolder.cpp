@@ -28,7 +28,7 @@
 #include "VPrimitiveTask.h"
 #include "RTblock.h"
 
-#include "Vxa_ICollection.h"
+#include "Vxa_ICollection2.h"
 #include "Vxa_IVSNFTaskImplementation3.h"
 #include "Vxa_IVSNFTaskImplementation3NC.h"
 
@@ -799,6 +799,37 @@ void VSNFTaskHolder::start (ISingleton *pExternalObject) {
 void VSNFTaskHolder::start (ICollection *pExternalObject) {
     if (m_pSNFTask) {
 	ICaller::Reference pICaller;
+	getRole (pICaller);
+	if (g_iLogger.isActive ()) {
+	    g_iLogger.printf (
+		"+++%5u: %p->%s [%u x %u]\n", taskId (), pExternalObject,
+		m_pSNFTask->selectorName (), m_pSNFTask->cardinality (), m_pSNFTask->parameterCount ()
+	    );
+	}
+	try {
+	    g_iScheduler.incrementTaskCount ();
+            if (m_pSNFTask->returnCase () == VComputationUnit::Return_Intension) {
+                pExternalObject->Bind (
+                    pICaller, m_pSNFTask->selectorName (), m_pSNFTask->parameterCount (), m_pSNFTask->cardinality ()
+                );
+            } else {
+                pExternalObject->Invoke (
+                    pICaller, m_pSNFTask->selectorName (), m_pSNFTask->parameterCount (), m_pSNFTask->cardinality ()
+                );
+            }
+	} catch (...) {
+	    g_iScheduler.decrementTaskCount ();
+	    throw;
+	}
+
+	Trigger::Reference pDeadPeerTrigger (new Trigger (this, &ThisClass::onDeadPeer));
+	pExternalObject->requestNoRouteToPeerCallback (m_pNoRouteToPeerTriggerTicket, pDeadPeerTrigger);
+    }
+}
+
+void VSNFTaskHolder::start (ICollection2 *pExternalObject) {
+    if (m_pSNFTask) {
+	ICaller2::Reference pICaller;
 	getRole (pICaller);
 	if (g_iLogger.isActive ()) {
 	    g_iLogger.printf (
