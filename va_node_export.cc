@@ -100,11 +100,11 @@ void VA::Node::Export::JSCallback (vxa_result_t &rResult, vxa_pack_t rPack) {
             << rResult.selectorComponent (0)
             << std::endl;
     */
-        local_value_t hApplicable; (
-            GetLocalFor (
-                hApplicable, hObject->Get (
-                    context (), NewString (rResult.selectorComponent (0))
-                )
+        local_string_t hSelector; local_value_t hApplicable; (
+            NewString (
+                hSelector, rResult.selectorComponent (0)
+            ) && GetLocalFor (
+                hApplicable, hObject->Get (context (), hSelector)
             ) && rResult.invokedIntensionally () ? (
                 SetResultToValue (rResult, hApplicable)
             ) : (
@@ -114,6 +114,7 @@ void VA::Node::Export::JSCallback (vxa_result_t &rResult, vxa_pack_t rPack) {
         ) || SetResultToUndefined (rResult);
     }
 }
+
 
 /*********************
  *----  Context  ----*
@@ -151,6 +152,36 @@ void VA::Node::Export::JSToString (vxa_result_t &rResult) {
     VString iResult;
     UnwrapString (iResult, value(), false);
     rResult = iResult;
+}
+
+
+/*****************
+ *----  New  ----*
+ *****************/
+
+void VA::Node::Export::JSNew (vxa_result_t &rResult, vxa_pack_t rPack) {
+    HandleScope iHS (this);
+
+    SetResultToNewInstance (rResult, value (), rPack);
+}
+
+
+/******************************
+ *----  Structure Access  ----*
+ ******************************/
+
+void VA::Node::Export::JSAt (vxa_result_t &rResult, vxa_any_t rKey) {
+    HandleScope iHS (this);
+
+    local_object_t hObject;
+    local_value_t hKey, hValue;
+    Isolate::ArgSink iKeySink (hKey, isolate ());
+    rKey.supply (iKeySink);
+    (
+        GetLocal (hObject) && GetLocalFor (
+            hValue, hObject->Get (context (), hKey)
+        ) && SetResultToValue (rResult, hValue)
+    ) || SetResultToUndefined (rResult);
 }
 
 
@@ -359,6 +390,9 @@ void VA::Node::Export::JSIsProxy (vxa_result_t &rResult) {
  ***************************/
 
 VA::Node::Export::ClassBuilder::ClassBuilder (Vxa::VClass *pClass) : BaseClass::ClassBuilder (pClass) {
+    defineMethod ("at:"                         , &Export::JSAt);
+    defineMethod (".at:"                        , &Export::JSAt);
+
     defineMethod (".global"                     , &Export::JSGlobal);
 
     defineMethod (".strictEquals:"              , &Export::JSStrictEquals);
@@ -413,6 +447,14 @@ VA::Node::Export::ClassBuilder::ClassBuilder (Vxa::VClass *pClass) : BaseClass::
     defineMethod (".isDataView"                 , &Export::JSIsDataView);
     defineMethod (".isSharedArrayBuffer"        , &Export::JSIsSharedArrayBuffer);
     defineMethod (".isProxy"                    , &Export::JSIsProxy);
+
+    defineMethod (".new"                        , &Export::JSNew);
+    defineMethod (".new:"                       , &Export::JSNew);
+    defineMethod (".new:and:"                   , &Export::JSNew);
+    defineMethod (".new:and:and:"               , &Export::JSNew);
+    defineMethod (".new:and:and:and:"           , &Export::JSNew);
+    defineMethod (".new:and:and:and:and:"       , &Export::JSNew);
+    defineMethod (".new:and:and:and:and:and:"   , &Export::JSNew);
 
     defineDefault (&Export::JSCallback);
 }

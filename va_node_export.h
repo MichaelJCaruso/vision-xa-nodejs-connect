@@ -87,12 +87,15 @@ namespace VA {
         //  JS Methods
         protected:
             void JSCallback (vxa_result_t &rResult, vxa_pack_t rPack);
+            void JSNew (vxa_result_t &rResult, vxa_pack_t rPack);
 
             void JSGlobal (vxa_result_t &rResult);
 
             void JSStrictEquals (vxa_result_t &rResult, ThisClass *pOther);
 
             void JSToString (vxa_result_t &rResult);
+
+            void JSAt (vxa_result_t &rResult, vxa_any_t rWhat);
 
             void JSIsUndefined (vxa_result_t &rResult);
             void JSIsNull (vxa_result_t &rResult);
