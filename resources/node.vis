@@ -44,8 +44,10 @@ JS define: "jsObject" toBePrimitive: 7;
 
 JS defineMethod: [ | object: jsObject |
     jsObject __hasExternalImplementation ifTrue: [
-        ^self asSelf extendBy: [ !jsObject <- ^my jsObject ]
-    ].else: [jsObject]
+        jsObject \.isNull == 0 ifTrue: [ ### ... Isn't a JS Null
+            ^self asSelf extendBy: [ !jsObject <- ^my jsObject ]
+        ]
+    ] ifFalse: [jsObject]
 ];
 JS defineMethod: [ | global |
     ^self object: ^self jsGlobal
